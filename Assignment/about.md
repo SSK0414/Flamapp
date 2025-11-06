@@ -49,7 +49,6 @@ Compute tangent vectors using the derivative:
 
 B'(t) = 3(1−t)²(P₁−P₀) + 6(1−t)t(P₂−P₁) + 3t²(P₃−P₂)
 
-- 
 - Normalize and draw short tangent lines at intervals along the curve.
 
 ---
