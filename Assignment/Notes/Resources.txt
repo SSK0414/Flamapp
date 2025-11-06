@@ -1,0 +1,17 @@
+Materials Used:
+    1)  https://pomax.github.io/bezierinfo/
+    2)  https://pages.mtu.edu/~shene/COURSES/cs3621/NOTES/spline/Bezier/bezier-der.html
+    3)  https://stackoverflow.com/questions/4089443/find-the-tangent-of-a-point-on-a-cubic-ezier-curve
+    4)  https://cedarcantab.wordpress.com/2021/02/02/box2d-lite-walkthrough-in-javascript-mass-spring-damper-system/
+    5)  https://dev.to/hexshift/how-to-create-physics-based-spring-animations-with-custom-damping-in-javascript-1e08/
+    6)  https://blog.maximeheckel.com/posts/the-physics-behind-spring-animations/
+    7)  https://medium.com/appledeveloperacademy-ufpe/swift-how-to-use-coremotion-to-obtain-sensorial-data-20b1b73a948a
+    8)  https://reintech.io/blog/developing-ios-apps-core-motion-sensor-data
+    
+    1) https://www.youtube.com/watch?v=aVwxzDHniEw [Beauty of Bézier Curves]
+    2) https://www.youtube.com/watch?v=a4zMX6dDVXI [Coding a Bezier curve from scratch!]
+    3) https://www.youtube.com/watch?v=cnE7qkezi88 [Spring Animation from Scratch — Part 1 of 2]
+    4) https://www.youtube.com/watch?v=TivVPcG1o5I [Spring Animation from Scratch — Part 2 of 2]
+    5) https://www.youtube.com/watch?v=YS4K_GT2_vM [Real-Time Device Sensor Data in SwiftUI | SwiftUI | Xcode Tutorial]
+    6) https://www.youtube.com/watch?v=-wM7VF-pM2U [How to use Core Motion, Accelerometer & Gyroscope in swift]
+    7) https://www.youtube.com/watch?v=GE8ZqrKqE5g [The Perfect Spring Animation]
