@@ -18,9 +18,9 @@ The main goal was to merge **mathematical precision** (Bézier geometry) with **
 A **cubic Bézier** is defined by 4 points:
 `P0`, `P1`, `P2`, and `P3`.
 
-[
+$$
 B(t) = (1 - t)^3P_0 + 3(1 - t)^2tP_1 + 3(1 - t)t^2P_2 + t^3P_3
-]
+$$
 
 where `t` ranges from `0 → 1`.
 
@@ -29,9 +29,9 @@ where `t` ranges from `0 → 1`.
 
 To compute tangents (the rope’s direction at a point), we use the derivative:
 
-[
+$$
 B'(t) = 3(1 - t)^2(P_1 - P_0) + 6(1 - t)t(P_2 - P_1) + 3t^2(P_3 - P_2)
-]
+$$
 
 These tangent vectors are normalized and drawn as short lines along the curve to visualize slope and motion.
 
@@ -43,9 +43,9 @@ Each handle (`P1` and `P2`) moves under a **spring-damping system**, using **sem
 
 The model:
 
-[
+$$
 a = -k(x - x_{target}) - c v
-]
+$$
 
 where:
 
@@ -56,12 +56,12 @@ where:
 
 Then the simulation updates every frame:
 
-[
+$$
 v += a \cdot \Delta t
-]
-[
+$$
+$$
 x += v \cdot \Delta t
-]
+$$
 
 This produces smooth, physically plausible motion — like an elastic rope returning to rest.
 
