@@ -93,6 +93,8 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 * Clamp and constrain handle positions to an inner square within view bounds to avoid runaway values when device motion is aggressive.
 * Keep integration semi-implicit: update velocity using acceleration first, then update position using new velocity.
 
+https://github.com/user-attachments/assets/c010ccd8-74f7-4172-9dfb-a087fa9527e7
+
 ---
 
 # Web app
@@ -132,6 +134,8 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 * For stable physics, use `requestAnimationFrame` and clamp `dt` to avoid large steps; consider a fixed-step accumulator similar to iOS.
 * For high-resolution displays, set canvas width/height according to `devicePixelRatio` and scale the drawing context with `ctx.setTransform(ratio,0,0,ratio,0,0)`.
 
+https://github.com/user-attachments/assets/3585794c-f642-40d9-a4af-21b3006a4545
+
 ---
 
 ## Differences and commonalities
@@ -154,9 +158,6 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 * Plain HTML + SVG or Canvas approach.
 * Easier to inspect and tweak parameters live via console.
 * Device orientation permission and cross-browser considerations (permission prompts, different event ranges).
-
-
-https://github.com/user-attachments/assets/3585794c-f642-40d9-a4af-21b3006a4545
 
 
 ---
