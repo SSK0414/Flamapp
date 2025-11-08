@@ -155,6 +155,10 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 * Easier to inspect and tweak parameters live via console.
 * Device orientation permission and cross-browser considerations (permission prompts, different event ranges).
 
+
+https://github.com/user-attachments/assets/3585794c-f642-40d9-a4af-21b3006a4545
+
+
 ---
 
 ## Submission checklist
