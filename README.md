@@ -81,7 +81,7 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 
 ## How to run
 
-1. Open the Xcode project (use iOS 17+ SDK when possible).
+1. Open the Xcode project (I used the suite for iOS 26 and above).
 2. Connect a real iPhone for testing gyroscope features (Simulator has limited sensor emulation).
 3. Build and run on the device.
 4. On first tap you may request motion permission (iOS requires explicit activation for device motion).
@@ -92,6 +92,9 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 * Render to `UIGraphicsImageRenderer` or similar and set `imageLayer.contents = img.cgImage` inside a `CATransaction` with actions disabled. This prevents ghosting/flicker.
 * Clamp and constrain handle positions to an inner square within view bounds to avoid runaway values when device motion is aggressive.
 * Keep integration semi-implicit: update velocity using acceleration first, then update position using new velocity.
+* coalesce parameter was troublesome, resulting in visual artifacts and rendering issues. 
+
+https://github.com/user-attachments/assets/c010ccd8-74f7-4172-9dfb-a087fa9527e7
 
 ---
 
@@ -126,11 +129,13 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 2. Open `index.html` in a modern web browser (Chrome, Safari, Firefox).
 3. On mobile, tap to grant device orientation permissions if needed (iOS requires user interaction).
 
-## Implementation notes and tips
+## Implementation notes and tips ( well, things that I had trouble figuring ouut )
 
 * Use small `t` step (e.g., `0.01`) to sample the Bézier curve; for Canvas draw the sampled polyline or use `context.bezierCurveTo` if you only want rendering — the math must still be manual for sampling and tangents.
 * For stable physics, use `requestAnimationFrame` and clamp `dt` to avoid large steps; consider a fixed-step accumulator similar to iOS.
 * For high-resolution displays, set canvas width/height according to `devicePixelRatio` and scale the drawing context with `ctx.setTransform(ratio,0,0,ratio,0,0)`.
+
+https://github.com/user-attachments/assets/3585794c-f642-40d9-a4af-21b3006a4545
 
 ---
 
@@ -154,6 +159,7 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 * Plain HTML + SVG or Canvas approach.
 * Easier to inspect and tweak parameters live via console.
 * Device orientation permission and cross-browser considerations (permission prompts, different event ranges).
+
 
 ---
 
