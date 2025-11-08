@@ -1,104 +1,170 @@
-# Interactive Bézier Rope
+# Interactive Bézier Rope — iOS + Webapp
 
-An **interactive cubic Bézier curve** that behaves like a **springy rope** — responding smoothly to mouse or touch input (and device tilt, if available).
-You can control the two inner control points independently, and the curve reacts with natural motion using a spring-damping physics model.
+An interactive cubic Bézier curve that behaves like a springy rope.
+This READme describes both the iOS app and the Web app implementations, their math and physics, design decisions, controls, and how to run each version.
 
 ---
 
 ## Concept
 
-This project visualizes a **cubic Bézier curve** while simulating physical spring behavior on its control points.
-
-The main goal was to merge **mathematical precision** (Bézier geometry) with **dynamic motion** (simple physics integration).
+A cubic Bézier curve is rendered and sampled at small `t` increments. The two inner control points (`P1`, `P2`) are dynamic and driven by a simple spring-damping physics model so the curve reacts like an elastic rope. Tangents are computed and drawn along the curve to show local direction and motion.
 
 ---
 
-## Math Behind the Curve
+## Math
 
-A **cubic Bézier** is defined by 4 points:
-`P0`, `P1`, `P2`, and `P3`.
+### Cubic Bézier
 
-$$
-B(t) = (1 - t)^3P_0 + 3(1 - t)^2tP_1 + 3(1 - t)t^2P_2 + t^3P_3
-$$
-
-where `t` ranges from `0 → 1`.
-
-* `P0` and `P3` are **fixed endpoints** (left and right midpoints of the canvas).
-* `P1` and `P2` are **control handles** that define the curvature.
-
-To compute tangents (the rope’s direction at a point), we use the derivative:
+For control points `P0`, `P1`, `P2`, `P3`:
 
 $$
-B'(t) = 3(1 - t)^2(P_1 - P_0) + 6(1 - t)t(P_2 - P_1) + 3t^2(P_3 - P_2)
+B(t) = (1 − t)^3 P0 + 3(1 − t)^2 t P1 + 3(1 − t) t^2 P2 + t^3 P3
 $$
 
-These tangent vectors are normalized and drawn as short lines along the curve to visualize slope and motion.
+Sample `t` in small steps (for example `0.01`) to construct the path.
+
+### Tangent (derivative)
+
+$$
+B'(t) = 3(1 − t)^2 (P1 − P0) + 6(1 − t) t (P2 − P1) + 3 t^2 (P3 − P2)
+$$
+
+Normalize `B'(t)` and draw short lines at intervals to visualize local direction.
 
 ---
 
 ## Physics Model
 
-Each handle (`P1` and `P2`) moves under a **spring-damping system**, using **semi-implicit Euler integration**.
-
-The model:
+Each handle (`P1`, `P2`) uses a mass-spring-damper model with semi-implicit Euler integration:
 
 $$
-a = -k(x - x_{target}) - c v
+a = -k * (pos - target) - c * vel
+vel += a * dt
+pos += vel * dt
 $$
 
-where:
+* `k` = stiffness (spring strength)
+* `c` = damping (friction)
+* `target` = desired position (mouse, drag, or mapped device motion)
+* Use a small, fixed physics timestep (e.g., 1/60 s) and accumulate frames for stability.
 
-* `k` = stiffness → how strong the spring pulls toward its target
-* `c` = damping → friction that reduces oscillation
-* `v` = velocity of the handle
-* `x_target` = target position (from mouse, key, or sensor input)
-
-Then the simulation updates every frame:
-
-$$
-v += a \cdot \Delta t
-$$
-$$
-x += v \cdot \Delta t
-$$
-
-This produces smooth, physically plausible motion — like an elastic rope returning to rest.
+Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and moderate `c` => stretchier rope.
 
 ---
 
-## Design Choices
+# iOS app
 
-### Interaction
+## Overview
 
-* You can **select which handle** to control:
+* Native UIKit implementation (Swift).
+* Uses CoreMotion for device motion input.
+* Runs physics in a fixed-step loop driven by `CADisplayLink`.
+* Renders to an offscreen image and updates a `CALayer.contents` to avoid flicker and produce atomic frame updates.
+* `P0` and `P3` are fixed endpoints; `P1` and `P2` are handles controllable independently.
 
-  * `1` → select **P1**
-  * `2` → select **P2**
-  * `0` → deselect
-* Drag handles directly to reposition them.
-* Use **arrow keys** to nudge the selected handle.
-* Use **W/S** and **A/D** to adjust stiffness and damping.
-* Press **R** to reset to defaults.
-* On mobile, tap once to allow **device motion** (tilt control).
+## Features
 
-### Visuals
+* Tap to select/deselect a handle. Selected handle gets gyroscope control (toggle).
+* Drag a handle to move it directly (drag suspends spring physics for that handle).
+* When a selected handle receives motion input, its target is nudged toward a motion-mapped point; physics makes it spring.
+* `P1` uses inverted gyroscope mapping (moves opposite to device tilt). `P2` uses normal mapping.
+* Adjustable parameters: stiffness, damping, gyro gains, stretch multiplier.
+* Tangent visualization, small endpoint markers, monospaced coordinate labels.
+* Offscreen rendering to `UIImage` then atomic `CALayer` update to eliminate flicker.
 
-* A centered, clean layout using **SVG**.
-* Blue curve (`#79c7ff`) and amber tangents (`#ffd28c`).
-* Subtle grid and soft glow background for visual contrast.
-* Labels show the normalized coordinates of control points.
+## Controls
 
-### Implementation
+* Tap a handle: select/deselect (toggles gyroscope control).
+* Drag a handle: direct reposition (physics paused for that handle while dragging).
+* Tap outside: clear selection.
+* Optional runtime tuning: change `stiffness`, `damping`, `gyroGainX/Y`, `stretchMultiplier` in code or via a debug UI.
 
-* Written in **vanilla JavaScript + SVG**, no external libraries.
-* Mathematical and physics logic done manually — no prebuilt animation or Bézier APIs.
-* Simplified DOM (all SVG elements declared directly in HTML, no runtime creation).
+## How to run
+
+1. Open the Xcode project (use iOS 17+ SDK when possible).
+2. Connect a real iPhone for testing gyroscope features (Simulator has limited sensor emulation).
+3. Build and run on the device.
+4. On first tap you may request motion permission (iOS requires explicit activation for device motion).
+
+## Implementation notes and tips
+
+* Use a fixed-step physics accumulator (1/60 s) inside `CADisplayLink` to keep physics stable and deterministic.
+* Render to `UIGraphicsImageRenderer` or similar and set `imageLayer.contents = img.cgImage` inside a `CATransaction` with actions disabled. This prevents ghosting/flicker.
+* Clamp and constrain handle positions to an inner square within view bounds to avoid runaway values when device motion is aggressive.
+* Keep integration semi-implicit: update velocity using acceleration first, then update position using new velocity.
 
 ---
 
-## How to Run
+# Web app
 
-1. Save `index.html`, `main.js`, and this `README.md` in one folder.
-2. Open `index.html` in a modern browser.
-3. Drag or nudge handles to shape the rope — enjoy the motion.
+## Overview
+
+* Plain HTML + SVG (or Canvas) implementation in JavaScript.
+* `P0` and `P3` are fixed to left/right midpoints of a centered square.
+* `P1` and `P2` are independent handles.
+* Handles move with a spring-damped integrator toward targets set by drag/mouse/touch input.
+* Optional deviceorientation support: map pitch/roll to target offsets for mobile tilt control.
+
+## Features
+
+* Interactive drag-and-drop for each handle.
+* Labels showing normalized coordinates (0..1) or pixel coordinates above handles.
+* Tangent lines drawn at regular intervals.
+* Keyboard shortcuts for quick tuning (stiffness/damping, reset).
+* DPI-aware canvas setup or SVG viewBox to keep visuals sharp across displays.
+* Simple grid background and clean visual styling.
+
+## Controls
+
+* Drag handles to move them.
+* Tap/click to select a handle for subtle pointer-based nudging.
+* Keyboard: W/S or ArrowUp/ArrowDown to change stiffness; A/D or ArrowLeft/ArrowRight to change damping; R to reset.
+
+## How to run
+
+1. Save `index.html` (and optionally `main.js`) in a folder.
+2. Open `index.html` in a modern web browser (Chrome, Safari, Firefox).
+3. On mobile, tap to grant device orientation permissions if needed (iOS requires user interaction).
+
+## Implementation notes and tips
+
+* Use small `t` step (e.g., `0.01`) to sample the Bézier curve; for Canvas draw the sampled polyline or use `context.bezierCurveTo` if you only want rendering — the math must still be manual for sampling and tangents.
+* For stable physics, use `requestAnimationFrame` and clamp `dt` to avoid large steps; consider a fixed-step accumulator similar to iOS.
+* For high-resolution displays, set canvas width/height according to `devicePixelRatio` and scale the drawing context with `ctx.setTransform(ratio,0,0,ratio,0,0)`.
+
+---
+
+## Differences and commonalities
+
+### Common
+
+* Same Bézier math and tangent derivative formula.
+* Spring-damper physics and semi-implicit Euler integration.
+* Both implementations provide independent control of `P1` and `P2` and tangent visualization.
+* Both support device motion mapping (web via `deviceorientation`, iOS via CoreMotion).
+
+### iOS-specific
+
+* Uses CoreMotion and UIKit drawing APIs.
+* Offscreen rendering to `UIImage` + `CALayer.contents` for atomic updates to avoid flicker.
+* Fixed 60 Hz physics with `CADisplayLink` and capability to force preferredFramesPerSecond.
+
+### Web-specific
+
+* Plain HTML + SVG or Canvas approach.
+* Easier to inspect and tweak parameters live via console.
+* Device orientation permission and cross-browser considerations (permission prompts, different event ranges).
+
+---
+
+## Submission checklist
+
+* README (this file) explaining math, physics, controls, and how to run both versions.
+* Source code: Swift files for iOS (e.g., `BezierView.swift`, minimal `ViewController.swift`, Xcode project) and `index.html` / `main.js` for the web.
+* Screen recordings (max 30s) demonstrating interactivity for both iOS (real device) and Web (desktop or mobile). Include a short clip showing gyroscope control on the device.
+
+---
+
+## Final remarks
+
+This combined project demonstrates precise mathematical rendering and real-time physics. The iOS implementation focuses on rendering and sensor integration; the Web version offers easy experimentation and rapid iteration. Both are organized so the Bézier math, physics, and input handling are clearly separated and implemented from scratch. This was really fun, making this project. Thank you!
