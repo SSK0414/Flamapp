@@ -19,7 +19,7 @@ final class BezierView: UIView {
 
     private var isReady = false
 
-    // Targets to which handles are springing
+    // Targets to which handles are spring-ing
     private var T1 = CGPoint.zero
     private var T2 = CGPoint.zero
 
@@ -31,18 +31,18 @@ final class BezierView: UIView {
     private let defaultStiffness: CGFloat = 120.0
     private let defaultDamping: CGFloat = 20.0
 
-    // live physics params
+    // live physics parameters
     var stiffness: CGFloat
     var damping: CGFloat
     
-    // gyro mapping gains (tweak to increase mapped offset from device rotation)
-    // Larger values -> the same roll/pitch moves the target farther on screen
-    var gyroGainX: CGFloat = 140.0 // previously ~80
-    var gyroGainY: CGFloat = 110.0 // previously ~60
+    // gyroscope mapping gains (tweaking; to increase mapped offset from device rotation)
+    // Larger values -> the same roll/pitch moves the target farther on screen.
+    var gyroGainX: CGFloat = 140.0 // previous val = 100.0
+    var gyroGainY: CGFloat = 110.0 // previous val = 70.0
 
     // extra multiplier to make the rope "stretch" more when mapping the gyro target.
     // This multiplies the offset vector from center — values >1 cause longer stretch.
-    var stretchMultiplier: CGFloat = 1.35
+    var stretchMultiplier: CGFloat = 1.35 // originally 1.0
     
     // visuals
     private let tStep: CGFloat = 0.01
@@ -76,6 +76,7 @@ final class BezierView: UIView {
     private var measuredFPS: CGFloat = 0.0
 
     // Anti-flicker: cached rendered frame image (rendered once per display tick)
+    // I had a lot of problems with flickering. This helped.
     private var lastFrameImage: UIImage?
 
     // MARK: - Init
@@ -107,12 +108,12 @@ final class BezierView: UIView {
         layer.addSublayer(imageLayer)
 
         setupTraitObservers()
-        // note: we don't call any addGestureRecognizers — touches are handled by touches* methods
+        // note: I don't call any addGestureRecognizers — touches are handled implicitly by touches* methods
     }
 
     private func setupTraitObservers() {
         if #available(iOS 17.0, *) {
-            // observe display scale changes
+            // display scale changes
             registerForTraitChanges([UITraitDisplayScale.self]) { (selfRef: Self, _: UITraitCollection) in
                 DispatchQueue.main.async {
                     selfRef.layer.contentsScale = selfRef.traitCollection.displayScale
@@ -339,8 +340,8 @@ final class BezierView: UIView {
 
             // debug overlay
             if let dt = lastDt {
-                let debugText = String(format: "fps: %.0f  dt: %.4f  v1:%.0f,%.0f  v2:%.0f,%.0f",
-                                       measuredFPS, dt, V1.x, V1.y, V2.x, V2.y)
+                let debugText = String(format: "fps: %.0f  ", // dt: %.4f  v1:%.0f,%.0f  v2:%.0f,%.0f",
+                                       measuredFPS) //, dt, V1.x, V1.y, V2.x, V2.y)
                 let dbgAttr: [NSAttributedString.Key: Any] = [
                     .font: UIFont.systemFont(ofSize: 11),
                     .foregroundColor: UIColor(white: 0.85, alpha: 1)
