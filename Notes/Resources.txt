@@ -23,4 +23,4 @@ References Used:
     1) https://cubic-bezier.com/
     2) https://www.desmos.com/calculator/cahqdxeshd
     3) https://pomax.github.io/bezierinfo/#molding
-    4) https://chatgpt.com [ webapp & iOS -> background images, general skeletal code and READme file, and obtaining references for learning ]
+    4) https://chatgpt.com [ webapp & iOS -> background images, general skeletal code and READme file, and obtaining references for learning, (side-note: GPT is horrible for generating code with the new iOS26 updates ]
