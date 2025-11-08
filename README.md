@@ -81,7 +81,7 @@ Tune `k` and `c` to get the desired softness/stretch behavior: lower `k` and mod
 
 ## How to run
 
-1. Open the Xcode project (use iOS 17+ SDK when possible).
+1. Open the Xcode project (I used the suite for iOS 26 and above).
 2. Connect a real iPhone for testing gyroscope features (Simulator has limited sensor emulation).
 3. Build and run on the device.
 4. On first tap you may request motion permission (iOS requires explicit activation for device motion).
