@@ -3,7 +3,7 @@
 An interactive cubic Bézier curve that behaves like a springy rope.
 This READme describes both the iOS app and the Web app implementations, their math and physics, design decisions, controls, and how to run each version.
 
-[side-note: /Notes hold the resources and references I used to make this project.]
+> side-note: /Notes hold the resources and references I used to make this project.
 ---
 
 ## Concept
